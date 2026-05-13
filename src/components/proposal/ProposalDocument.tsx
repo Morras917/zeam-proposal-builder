@@ -46,12 +46,12 @@ export function ProposalDocument({ state, costs }: Props) {
     !b.isPct && b.incl && b.fee ? b.fee / b.incl : null;
 
   return (
-    <div className="proposal-stack flex min-h-full flex-col gap-8 p-8">
+    <div className="proposal-stack flex min-h-full flex-col gap-6 p-6">
       {/* ═══ PAGE 1: COVER ═══ */}
       <Page>
         {/* Purple hero */}
         <div
-          className="relative flex flex-col px-12 pb-12 pt-9 text-white"
+          className="relative flex flex-col px-10 pb-8 pt-7 text-white"
           style={{ background: "#1F0440" }}
         >
           {/* Top brand bar */}
@@ -62,7 +62,7 @@ export function ProposalDocument({ state, costs }: Props) {
           </div>
 
           {/* Co-brand client */}
-          <div className="mt-7 flex max-w-[460px] items-center gap-3.5 rounded-[10px] border border-white/15 bg-white/[0.07] px-4 py-3.5">
+          <div className="mt-5 flex max-w-[460px] items-center gap-3.5 rounded-[10px] border border-white/15 bg-white/[0.07] px-4 py-3">
             <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white">
               {state.clientLogo ? (
                 <img
@@ -87,7 +87,7 @@ export function ProposalDocument({ state, costs }: Props) {
           </div>
 
           {/* Headline */}
-          <div className="mt-9 max-w-[620px]">
+          <div className="mt-6 max-w-[620px]">
             <h1 className="m-0 text-[34px] font-bold leading-[1.08] tracking-tight">
               Transparent, fee-led,{" "}
               <span className="font-semibold italic text-violet-300">
@@ -119,7 +119,7 @@ export function ProposalDocument({ state, costs }: Props) {
         </div>
 
         {/* Body */}
-        <div className="flex flex-1 flex-col px-12 pb-6 pt-7">
+        <div className="flex flex-col px-10 pb-5 pt-5">
           {/* TPV table */}
           <div className="keep-together">
             <h2 className="mb-3 text-[15px] font-bold">
@@ -148,7 +148,7 @@ export function ProposalDocument({ state, costs }: Props) {
           </div>
 
           {/* 5 schedules */}
-          <div className="keep-together mt-5">
+          <div className="keep-together mt-4">
             <h2 className="mb-3.5 text-[15px] font-bold tracking-tight">
               Pricing in five schedules
             </h2>
@@ -187,7 +187,7 @@ export function ProposalDocument({ state, costs }: Props) {
       {/* ═══ PAGE 2: HOW IT WORKS ═══ */}
       <Page>
         <HeaderBar subtitle="How the pricing works" {...hdr} />
-        <div className="flex-1 px-12 py-8">
+        <div className="px-10 py-6">
           <SectionTitle num="—" title="How TPV is calculated & what's in each schedule" />
           <div className="grid grid-cols-2 gap-3.5">
             <div className="rounded-lg p-[18px] text-white" style={{ background: "#1A0936" }}>
@@ -210,7 +210,7 @@ export function ProposalDocument({ state, costs }: Props) {
               </ul>
             </div>
           </div>
-          <div className="mt-5 rounded-lg border border-black/[0.08] bg-violet-900/[0.05] px-4 py-3.5 text-[10.5px] leading-relaxed text-black/60">
+          <div className="mt-4 rounded-lg border border-black/[0.08] bg-violet-900/[0.05] px-4 py-3 text-[10.5px] leading-relaxed text-black/60">
             <b className="text-stone-900">
               Compliance model —{" "}
               {state.complianceModel === "A"
@@ -231,8 +231,8 @@ export function ProposalDocument({ state, costs }: Props) {
       {/* ═══ PAGE 3: SERVICE ORDER §1 — Once-Off ═══ */}
       <Page>
         <HeaderBar subtitle="Service Order — Section 1" {...hdr} />
-        <div className="flex-1 px-12 py-9">
-          <div className="mb-7">
+        <div className="px-10 py-6">
+          <div className="mb-5">
             <div className="text-[10px] font-semibold uppercase tracking-widest text-violet-600">
               {state.productLine === "BOTH"
                 ? "Business Account · Infrastructure / API"
@@ -251,7 +251,7 @@ export function ProposalDocument({ state, costs }: Props) {
           </div>
 
           {/* Deal terms grid */}
-          <div className="mb-7 grid grid-cols-4 overflow-hidden rounded-lg border border-black/[0.08]">
+          <div className="mb-5 grid grid-cols-4 overflow-hidden rounded-lg border border-black/[0.08]">
             {[
               ["SO Reference", state.soReference || `SO-${new Date().getFullYear()}-001`],
               ["MSA Reference", state.msaReference || "—"],
@@ -302,7 +302,7 @@ export function ProposalDocument({ state, costs }: Props) {
       {/* ═══ PAGE 4: SECTION 2 — Platform & Bundles ═══ */}
       <Page>
         <HeaderBar subtitle="Service Order — Section 2" {...hdr} />
-        <div className="flex-1 px-12 py-9">
+        <div className="px-10 py-6">
           <SectionTitle
             num="02"
             title={
@@ -378,7 +378,7 @@ export function ProposalDocument({ state, costs }: Props) {
       {/* ═══ PAGE 5: SECTIONS 3 & 4 — SLA + Compliance ═══ */}
       <Page>
         <HeaderBar subtitle="Service Order — Sections 3 & 4" {...hdr} />
-        <div className="flex-1 px-12 py-9">
+        <div className="px-10 py-6">
           <SectionTitle num="03" title="Support / SLA" />
 
           {(slaTierBA || slaTierINFRA) && (
@@ -411,7 +411,7 @@ export function ProposalDocument({ state, costs }: Props) {
             ]}
           />
 
-          <div className="mt-5" />
+          <div className="mt-4" />
           <SectionTitle num="04" title="Compliance modules — usage-based" />
           <SimpleTable
             cols={[
@@ -432,7 +432,7 @@ export function ProposalDocument({ state, costs }: Props) {
       {/* ═══ PAGE 6: SECTION 5 — Corridors Addendum ═══ */}
       <Page>
         <HeaderBar subtitle="Addendum — Per-Corridor Processing Rates" {...hdr} />
-        <div className="flex-1 px-12 py-9">
+        <div className="px-10 py-6">
           <SectionTitle
             num="05"
             title={`Addendum — ${state.region === "ALL" ? "all regions" : state.region} corridors`}
@@ -472,7 +472,7 @@ export function ProposalDocument({ state, costs }: Props) {
       {/* ═══ PAGE 7: COMMERCIAL SUMMARY ═══ */}
       <Page>
         <HeaderBar subtitle="Commercial Summary" {...hdr} />
-        <div className="flex-1 px-12 py-9">
+        <div className="px-10 py-6">
           <div className="text-[10px] font-semibold uppercase tracking-widest text-violet-600">
             Commercial summary
           </div>
@@ -485,13 +485,13 @@ export function ProposalDocument({ state, costs }: Props) {
             fees are charged in arrears.
           </p>
 
-          <div className="mt-5 grid grid-cols-3 gap-3">
+          <div className="mt-4 grid grid-cols-3 gap-3">
             <BigStat label="One-off (on signature)" value={fmt$(onceOffTotal)} />
             <BigStat label="Fixed monthly (advance)" value={fmt$(monthlyTotal)} highlight />
             <BigStat label="Estimated annual" value={fmt$(monthlyTotal * 12 + onceOffTotal)} />
           </div>
 
-          <h3 className="mb-2.5 mt-7 text-[13px] font-bold">Breakdown</h3>
+          <h3 className="mb-2 mt-5 text-[13px] font-bold">Breakdown</h3>
           <SimpleTable
             cols={[
               { k: "item", label: "Line", flex: 2.2 },
@@ -520,7 +520,7 @@ export function ProposalDocument({ state, costs }: Props) {
           />
 
           {/* Signature block */}
-          <div className="mt-8 grid grid-cols-2 gap-6">
+          <div className="mt-6 grid grid-cols-2 gap-6">
             <SigBlock label="For Zeam" name="Zeam Authorised Signatory" />
             <SigBlock
               label={`For ${state.clientName || "Client"}`}

@@ -7,7 +7,6 @@ export function Page({ children }: { children: ReactNode }) {
       className="proposal-page mx-auto flex flex-col overflow-hidden rounded bg-white shadow-2xl"
       style={{
         width: 794,
-        minHeight: 1123,
         fontSize: 11,
         lineHeight: 1.45,
         printColorAdjust: "exact",
@@ -31,7 +30,7 @@ export function HeaderBar({
 }) {
   return (
     <div
-      className="flex items-center justify-between px-9 py-[18px] text-white"
+      className="flex items-center justify-between px-10 py-3.5 text-white"
       style={{ background: "#1F0440" }}
     >
       <div className="flex items-center gap-3.5">
@@ -67,7 +66,7 @@ export function FooterBar({
   clientLogo?: string;
 }) {
   return (
-    <div className="mt-auto flex items-center justify-between border-t border-black/[0.08] px-9 pb-7 pt-[18px] text-[10px] text-black/50">
+    <div className="flex items-center justify-between border-t border-black/[0.08] px-10 py-4 text-[10px] text-black/50">
       <span>Zeam · {year || "2026"}</span>
       <div className="flex items-center gap-2 font-medium text-stone-900">
         {clientLogo ? (
