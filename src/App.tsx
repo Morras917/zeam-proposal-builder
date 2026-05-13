@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useProposalState } from "./hooks/useProposalState";
 import { useDerivedCosts } from "./hooks/useDerivedCosts";
 import { BuilderForm } from "./components/form/BuilderForm";
 import { ProposalDocument } from "./components/proposal/ProposalDocument";
+import { saveProposalPdf } from "./utils/savePdf";
 
 const IconPrinter = () => (
   <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
@@ -19,11 +20,33 @@ const IconReset = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 20v-5h-5M4.5 9A8 8 0 0119.5 15M19.5 15A8 8 0 014.5 9" />
   </svg>
 );
+const IconPdf = () => (
+  <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+  </svg>
+);
+const IconSpinner = () => (
+  <svg className="h-3.5 w-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={4} />
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+  </svg>
+);
 
 export default function App() {
   const { state, set, setProductLine, setOnceOffItem, setBundle, reset } =
     useProposalState();
   const costs = useDerivedCosts(state);
+  const [pdfBusy, setPdfBusy] = useState(false);
+
+  const handleSavePdf = useCallback(async () => {
+    setPdfBusy(true);
+    try {
+      const name = `${state.clientName || "Proposal"} — ${state.soReference || "Draft"}.pdf`;
+      await saveProposalPdf(name);
+    } finally {
+      setPdfBusy(false);
+    }
+  }, [state.clientName, state.soReference]);
 
   // Dynamic document title
   useEffect(() => {
@@ -77,7 +100,9 @@ export default function App() {
             }}
           />
           <ToolbarBtn icon={<IconPrinter />} label="Print" onClick={() => window.print()} />
-          <button
+          <ToolbarBtn
+            icon={<IconDownload />}
+            label="JSON"
             onClick={() => {
               const data = JSON.stringify(state, null, 2);
               const blob = new Blob([data], { type: "application/json" });
@@ -88,10 +113,14 @@ export default function App() {
               a.click();
               URL.revokeObjectURL(url);
             }}
-            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-3.5 py-1.5 text-[11px] font-semibold text-white shadow-sm shadow-violet-500/25 transition hover:bg-violet-700 active:scale-[0.97]"
+          />
+          <button
+            onClick={handleSavePdf}
+            disabled={pdfBusy}
+            className="flex items-center gap-1.5 rounded-lg bg-violet-600 px-3.5 py-1.5 text-[11px] font-semibold text-white shadow-sm shadow-violet-500/25 transition hover:bg-violet-700 active:scale-[0.97] disabled:opacity-60 disabled:pointer-events-none"
           >
-            <IconDownload />
-            Export
+            {pdfBusy ? <IconSpinner /> : <IconPdf />}
+            {pdfBusy ? "Generating…" : "Save PDF"}
           </button>
         </div>
       </header>
