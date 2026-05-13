@@ -37,12 +37,15 @@ export async function saveProposalPdf(filename: string): Promise<boolean> {
 
     const imgData = canvas.toDataURL("image/png");
 
-    // Calculate dimensions to fit A4 exactly
+    // Map canvas pixels → mm, preserving aspect ratio.
+    // Pages at exactly 794×1123 map to 210×297mm (A4).
+    // If a page overflows minHeight, the extra content extends past the
+    // PDF page boundary — harmless, and avoids vertical distortion.
     const imgW = A4_W_MM;
     const imgH = (canvas.height * A4_W_MM) / canvas.width;
 
     if (i > 0) pdf.addPage();
-    pdf.addImage(imgData, "PNG", 0, 0, imgW, Math.min(imgH, A4_H_MM));
+    pdf.addImage(imgData, "PNG", 0, 0, imgW, imgH);
   }
 
   pdf.save(filename);
