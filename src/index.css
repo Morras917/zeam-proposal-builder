@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/* ── Base ── */
+body {
+  font-family: "Manrope", system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+  letter-spacing: -0.005em;
+}
+
+::selection {
+  background: #6938ef;
+  color: #fff;
+}
+
+/* ── Print color preservation ── */
+*,
+*::before,
+*::after {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  color-adjust: exact !important;
+}
+
+/* ── Print ── */
+@media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+  html,
+  body {
+    background: #fff !important;
+    height: auto !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .proposal-stack {
+    padding: 0 !important;
+    gap: 0 !important;
+    background: #fff !important;
+    display: block !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+  .proposal-page {
+    box-shadow: none !important;
+    page-break-after: always;
+    break-after: page;
+    margin: 0 !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    height: auto !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+  .proposal-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  .proposal-page .keep-together,
+  .proposal-page > div > div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
