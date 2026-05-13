@@ -16,8 +16,8 @@ export function Field({
   className?: string;
 }) {
   return (
-    <div className={`flex flex-1 flex-col gap-1 ${className}`}>
-      <label className="text-[10px] font-semibold uppercase tracking-wider text-stone-500">
+    <div className={`flex flex-1 flex-col gap-1.5 ${className}`}>
+      <label className="text-[10px] font-semibold uppercase tracking-[0.08em] text-stone-400">
         {label}
       </label>
       {children}
@@ -28,7 +28,7 @@ export function Field({
 /* ── Inputs ── */
 
 const inputCls =
-  "w-full rounded-md border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100";
+  "w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-[13px] text-stone-800 outline-none transition-all placeholder:text-stone-300 focus:border-violet-400 focus:ring-2 focus:ring-violet-500/10 hover:border-stone-300";
 
 export function Text({
   value,
@@ -65,7 +65,7 @@ export function Num({
   return (
     <div className="flex flex-1 flex-col gap-0.5">
       {label && (
-        <span className="text-[9px] font-semibold uppercase tracking-wider text-stone-500">
+        <span className="text-[9px] font-semibold uppercase tracking-[0.08em] text-stone-400">
           {label}
         </span>
       )}
@@ -91,7 +91,7 @@ export function TextArea({
 }) {
   return (
     <textarea
-      className={`${inputCls} min-h-[64px] resize-y leading-relaxed`}
+      className={`${inputCls} min-h-[72px] resize-y leading-relaxed`}
       value={value}
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
@@ -110,7 +110,7 @@ export function Select({
 }) {
   return (
     <select
-      className={inputCls}
+      className={`${inputCls} cursor-pointer`}
       value={value}
       onChange={(e) => onChange(e.target.value)}
     >
@@ -135,15 +135,15 @@ export function Segmented({
   options: { value: string; label: string }[];
 }) {
   return (
-    <div className="flex gap-1 rounded-lg bg-stone-100 p-1">
+    <div className="flex gap-0.5 rounded-lg bg-stone-100 p-[3px]">
       {options.map((o) => (
         <button
           key={o.value}
           type="button"
           onClick={() => onChange(o.value)}
-          className={`flex-1 rounded-md px-3 py-1.5 text-[11px] font-semibold transition ${
+          className={`flex-1 rounded-[7px] px-3 py-[7px] text-[11px] font-semibold transition-all duration-150 ${
             value === o.value
-              ? "bg-white text-violet-700 shadow-sm"
+              ? "bg-white text-violet-700 shadow-sm ring-1 ring-black/[0.04]"
               : "text-stone-500 hover:text-stone-700"
           }`}
         >
@@ -167,13 +167,13 @@ export function Toggle({
     <button
       type="button"
       onClick={() => onChange(!on)}
-      className={`relative h-5 w-9 flex-shrink-0 rounded-full transition-colors ${
-        on ? "bg-violet-600" : "bg-stone-300"
+      className={`relative h-[22px] w-10 flex-shrink-0 rounded-full transition-colors duration-200 ${
+        on ? "bg-violet-600" : "bg-stone-200"
       }`}
     >
       <div
-        className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow transition-[left] ${
-          on ? "left-[18px]" : "left-0.5"
+        className={`absolute top-[3px] h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-200 ${
+          on ? "left-[21px]" : "left-[3px]"
         }`}
       />
     </button>
@@ -201,14 +201,14 @@ export function LogoUploader({
 
   return (
     <div
-      className="flex items-center gap-3 rounded-lg border border-dashed border-stone-200 bg-white p-3"
+      className="flex items-center gap-3.5 rounded-xl border border-dashed border-stone-200 bg-stone-50/50 p-3.5 transition hover:border-violet-300 hover:bg-violet-50/30"
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => {
         e.preventDefault();
         onPick(e.dataTransfer.files?.[0]);
       }}
     >
-      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-stone-100">
+      <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-stone-900/[0.05]">
         {value ? (
           <img
             src={value}
@@ -216,28 +216,28 @@ export function LogoUploader({
             className="max-h-full max-w-full object-contain"
           />
         ) : (
-          <span className="text-lg font-bold text-stone-400">
+          <span className="text-lg font-bold text-stone-300">
             {(clientName || "?").slice(0, 1).toUpperCase()}
           </span>
         )}
       </div>
-      <div className="flex flex-1 flex-col gap-1.5">
-        <span className="text-xs text-stone-500">
-          {value ? "Logo uploaded" : "Drop logo here or"}
+      <div className="flex flex-1 flex-col gap-2">
+        <span className="text-[11px] text-stone-500">
+          {value ? "Logo uploaded" : "Drop logo here or choose file"}
         </span>
         <div className="flex gap-2">
           <button
             type="button"
             onClick={() => ref.current?.click()}
-            className="rounded-md border border-stone-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-stone-700 transition hover:bg-stone-50"
+            className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-stone-700 shadow-sm transition hover:bg-stone-50 active:scale-[0.97]"
           >
-            Choose file
+            Browse
           </button>
           {value && (
             <button
               type="button"
               onClick={() => onChange("")}
-              className="rounded-md border border-stone-100 px-2.5 py-1 text-[11px] text-stone-500 transition hover:bg-stone-50"
+              className="rounded-lg px-3 py-1.5 text-[11px] font-medium text-stone-400 transition hover:text-red-500"
             >
               Remove
             </button>
