@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useProposalState } from "./hooks/useProposalState";
 import { useDerivedCosts } from "./hooks/useDerivedCosts";
 import { BuilderForm } from "./components/form/BuilderForm";
@@ -13,9 +14,9 @@ const IconDownload = () => (
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2" />
   </svg>
 );
-const IconPlus = () => (
+const IconReset = () => (
   <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h5M20 20v-5h-5M4.5 9A8 8 0 0119.5 15M19.5 15A8 8 0 014.5 9" />
   </svg>
 );
 
@@ -23,6 +24,14 @@ export default function App() {
   const { state, set, setProductLine, setOnceOffItem, setBundle, reset } =
     useProposalState();
   const costs = useDerivedCosts(state);
+
+  // Dynamic document title
+  useEffect(() => {
+    const client = state.clientName?.trim();
+    document.title = client
+      ? `${client} — Zeam Proposal`
+      : "Zeam Proposal Builder";
+  }, [state.clientName]);
 
   return (
     <>
@@ -58,7 +67,15 @@ export default function App() {
             </span>
           </div>
 
-          <ToolbarBtn icon={<IconPlus />} label="New" onClick={reset} />
+          <ToolbarBtn
+            icon={<IconReset />}
+            label="New"
+            onClick={() => {
+              if (window.confirm("Start a new proposal? This will discard all unsaved changes.")) {
+                reset();
+              }
+            }}
+          />
           <ToolbarBtn icon={<IconPrinter />} label="Print" onClick={() => window.print()} />
           <button
             onClick={() => {

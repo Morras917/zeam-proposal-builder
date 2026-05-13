@@ -46,10 +46,7 @@ export function ProposalDocument({ state, costs }: Props) {
     !b.isPct && b.incl && b.fee ? b.fee / b.incl : null;
 
   return (
-    <div
-      className="proposal-stack flex min-h-full flex-col gap-8 p-8"
-      style={{ background: "#1a0d2e" }}
-    >
+    <div className="proposal-stack flex min-h-full flex-col gap-8 p-8">
       {/* ═══ PAGE 1: COVER ═══ */}
       <Page>
         {/* Purple hero */}
