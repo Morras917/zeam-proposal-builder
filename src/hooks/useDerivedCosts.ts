@@ -70,11 +70,11 @@ export function useDerivedCosts(state: ProposalState): DerivedCosts {
     return { ...chosen, tpv };
   }, [state.expectedTPV, state.includeINFRA]);
 
-  const slaTierBA = state.includeBA
+  const slaTierBA = state.includeSLA && state.includeBA
     ? ZEAM_DATA.slaTiers.BA.find((t) => t.id === state.slaBA) ?? null
     : null;
 
-  const slaTierINFRA = state.includeINFRA
+  const slaTierINFRA = state.includeSLA && state.includeINFRA
     ? ZEAM_DATA.slaTiers.INFRA.find((t) => t.id === state.slaINFRA) ?? null
     : null;
 

@@ -389,35 +389,42 @@ export function ProposalDocument({ state, costs }: Props) {
         <div className="px-10 py-6">
           <SectionTitle num="03" title="Support / SLA" />
 
-          {(slaTierBA || slaTierINFRA) && (
-            <div
-              className={`mb-4 grid gap-3 ${slaTierBA && slaTierINFRA ? "grid-cols-2" : "grid-cols-1"}`}
-            >
-              {slaTierBA && <SlaCard label="Business Account" tier={slaTierBA} />}
-              {slaTierINFRA && <SlaCard label="Infrastructure / API" tier={slaTierINFRA} />}
+          {state.includeSLA ? (
+            <>
+              {(slaTierBA || slaTierINFRA) && (
+                <div
+                  className={`mb-4 grid gap-3 ${slaTierBA && slaTierINFRA ? "grid-cols-2" : "grid-cols-1"}`}
+                >
+                  {slaTierBA && <SlaCard label="Business Account" tier={slaTierBA} />}
+                  {slaTierINFRA && <SlaCard label="Infrastructure / API" tier={slaTierINFRA} />}
+                </div>
+              )}
+              <h4 className="mb-2 mt-2 text-[11px] font-semibold uppercase tracking-wider text-black/60">
+                Full SLA tier matrix
+              </h4>
+              <SimpleTable
+                cols={[
+                  { k: "a", label: "Attribute", flex: 1.4 },
+                  { k: "std", label: "Standard", flex: 1 },
+                  { k: "pri", label: "Priority", flex: 1 },
+                  { k: "mc", label: "Mission-Critical", flex: 1 },
+                ]}
+                rows={[
+                  { a: "Monthly retainer", std: "$750", pri: "$2,500 / $4,500", mc: "$8,500 / $17,500" },
+                  { a: "Included support hours", std: "0 hrs", pri: "10–20 hrs", mc: "20 hrs" },
+                  { a: "Uptime SLA", std: "99.0%", pri: "99.5%", mc: "99.9%" },
+                  { a: "P1 response", std: "4 business hrs", pri: "1 hr (any time)", mc: "15 min (any time)" },
+                  { a: "Coverage", std: "Mon–Fri, 08–17h", pri: "7 days, 07–22h", mc: "24/7/365" },
+                  { a: "Channels", std: "Ticket + email", pri: "+ Chat", mc: "+ Phone + escalation" },
+                  { a: "Named contact", std: "No", pri: "Named contact", mc: "Dedicated TAM" },
+                ]}
+              />
+            </>
+          ) : (
+            <div className="rounded-md border border-stone-200 bg-stone-50 px-4 py-3 text-[10.5px] text-black/50">
+              SLA / Support not included in this proposal.
             </div>
           )}
-
-          <h4 className="mb-2 mt-2 text-[11px] font-semibold uppercase tracking-wider text-black/60">
-            Full SLA tier matrix
-          </h4>
-          <SimpleTable
-            cols={[
-              { k: "a", label: "Attribute", flex: 1.4 },
-              { k: "std", label: "Standard", flex: 1 },
-              { k: "pri", label: "Priority", flex: 1 },
-              { k: "mc", label: "Mission-Critical", flex: 1 },
-            ]}
-            rows={[
-              { a: "Monthly retainer", std: "$750", pri: "$2,500 / $4,500", mc: "$8,500 / $17,500" },
-              { a: "Included support hours", std: "0 hrs", pri: "10–20 hrs", mc: "20 hrs" },
-              { a: "Uptime SLA", std: "99.0%", pri: "99.5%", mc: "99.9%" },
-              { a: "P1 response", std: "4 business hrs", pri: "1 hr (any time)", mc: "15 min (any time)" },
-              { a: "Coverage", std: "Mon–Fri, 08–17h", pri: "7 days, 07–22h", mc: "24/7/365" },
-              { a: "Channels", std: "Ticket + email", pri: "+ Chat", mc: "+ Phone + escalation" },
-              { a: "Named contact", std: "No", pri: "Named contact", mc: "Dedicated TAM" },
-            ]}
-          />
 
           {reliance && (
             <>
