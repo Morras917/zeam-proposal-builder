@@ -276,6 +276,89 @@ describe("useDerivedCosts", () => {
     });
   });
 
+  /* ── Reliance model ── */
+  describe("reliance", () => {
+    it("returns null when includeReliance is false", () => {
+      const state = makeState({ includeReliance: false });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      expect(result.current.reliance).toBeNull();
+    });
+
+    it("returns base $3,000/mo fee when enabled with Zeam compliance", () => {
+      const state = makeState({ includeReliance: true, relianceSelfManaged: false, expectedTPV: 0 });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      expect(result.current.reliance).not.toBeNull();
+      expect(result.current.reliance!.monthlyFee).toBe(3000);
+      expect(result.current.reliance!.processingFee).toBe(0);
+      expect(result.current.reliance!.quarterlyReviewFee).toBe(0);
+      expect(result.current.reliance!.totalMonthly).toBe(3000);
+    });
+
+    it("calculates 0.15% processing fee on expectedTPV", () => {
+      const state = makeState({ includeReliance: true, relianceSelfManaged: false, expectedTPV: 3_500_000 });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      // 3,500,000 * 0.0015 = 5,250
+      expect(result.current.reliance!.processingFee).toBe(5250);
+      expect(result.current.reliance!.totalMonthly).toBe(3000 + 5250);
+    });
+
+    it("adds $1,500/qtr cert fee when self-managed, folded as $/3 in monthly total", () => {
+      const state = makeState({ includeReliance: true, relianceSelfManaged: true, expectedTPV: 0 });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      expect(result.current.reliance!.quarterlyReviewFee).toBe(1500);
+      // monthlyFee=3000 + processingFee=0 + 1500/3=500
+      expect(result.current.reliance!.totalMonthly).toBe(3500);
+    });
+
+    it("calculates totalMonthly for full self-managed scenario", () => {
+      const state = makeState({ includeReliance: true, relianceSelfManaged: true, expectedTPV: 2_000_000 });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      // $3,000 + (2,000,000 × 0.0015 = $3,000) + $1,500/3 = $6,500
+      expect(result.current.reliance!.processingFee).toBe(3000);
+      expect(result.current.reliance!.totalMonthly).toBe(3000 + 3000 + 500);
+    });
+
+    it("is included in monthlyTotal when enabled", () => {
+      const state = makeState({
+        includeReliance: true,
+        relianceSelfManaged: false,
+        expectedTPV: 0,
+        includeBA: false,
+        includeINFRA: false,
+        productLine: "BA",
+        bundles: { payout: "", collections: "", bulk: "", fx: "" },
+      });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      // Only reliance monthly fee since all else is disabled
+      expect(result.current.monthlyTotal).toBe(3000);
+    });
+
+    it("does not affect monthlyTotal when disabled", () => {
+      const base = makeState({
+        includeBA: true,
+        includeINFRA: false,
+        productLine: "BA",
+        bundles: { payout: "PAY-PAYG", collections: "", bulk: "", fx: "" },
+        slaBA: "std",
+        includeReliance: false,
+      });
+      const withReliance = { ...base, includeReliance: true, relianceSelfManaged: false, expectedTPV: 0 };
+      const { result: r1 } = renderHook(() => useDerivedCosts(base));
+      const { result: r2 } = renderHook(() => useDerivedCosts(withReliance));
+      // $750 (SLA std) vs $750 + $3,000 reliance
+      expect(r1.current.monthlyTotal).toBe(750);
+      expect(r2.current.monthlyTotal).toBe(3750);
+    });
+
+    it("annualEstimate includes reliance costs", () => {
+      const state = makeState({ includeReliance: true, relianceSelfManaged: false, expectedTPV: 0 });
+      const { result } = renderHook(() => useDerivedCosts(state));
+      expect(result.current.annualEstimate).toBe(
+        result.current.monthlyTotal * 12 + result.current.onceOffTotal,
+      );
+    });
+  });
+
   /* ── Corridor filtering ── */
   describe("corridors", () => {
     it("returns all corridors when region is ALL", () => {

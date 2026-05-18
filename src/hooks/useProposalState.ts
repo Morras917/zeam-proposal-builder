@@ -59,6 +59,11 @@ export function defaultState(): ProposalState {
     complianceModel: "A",
 
     region: "Africa",
+
+    includeReliance: false,
+    relianceSelfManaged: false,
+
+    corridorUrl: "https://zeam.io/corridors",
   };
 }
 
