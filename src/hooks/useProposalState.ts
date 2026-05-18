@@ -53,6 +53,7 @@ export function defaultState(): ProposalState {
 
     expectedTPV: 3_500_000,
 
+    includeSLA: true,
     slaBA: "pri",
     slaINFRA: "mc",
 

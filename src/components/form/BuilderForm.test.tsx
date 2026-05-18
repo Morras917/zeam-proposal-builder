@@ -208,11 +208,11 @@ describe("BuilderForm", () => {
         setBundle={noop}
       />,
     );
-    // once-off item toggles + 1 reliance-model toggle (always in DOM even when section closed)
+    // once-off item toggles + SLA toggle + reliance-model toggle (both always in DOM)
     const toggles = screen.getAllByRole("button").filter((b) =>
       b.className.includes("rounded-full"),
     );
-    expect(toggles.length).toBe(state.onceOffItems.length + 1);
+    expect(toggles.length).toBe(state.onceOffItems.length + 2);
   });
 
   it("renders the Reliance model section", () => {

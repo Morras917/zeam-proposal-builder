@@ -247,7 +247,13 @@ export function BuilderForm({
       )}
 
       <Section num="06" title="SLA / Support">
-        {state.includeBA && (
+        <Field label="Include SLA">
+          <Toggle
+            on={state.includeSLA}
+            onChange={(v) => set("includeSLA", v)}
+          />
+        </Field>
+        {state.includeSLA && state.includeBA && (
           <Field label="BA support tier">
             <Segmented
               value={state.slaBA}
@@ -259,7 +265,7 @@ export function BuilderForm({
             />
           </Field>
         )}
-        {state.includeINFRA && (
+        {state.includeSLA && state.includeINFRA && (
           <Field label="Infra support tier">
             <Segmented
               value={state.slaINFRA}

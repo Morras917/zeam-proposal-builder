@@ -113,6 +113,7 @@ export interface ProposalState {
   expectedTPV: number;
 
   // SLA
+  includeSLA: boolean;
   slaBA: string;
   slaINFRA: string;
 
