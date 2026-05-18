@@ -1,6 +1,7 @@
 import type { ProposalState } from "../../types";
 import type { DerivedCosts } from "../../hooks/useDerivedCosts";
 import { ZEAM_DATA } from "../../data/cpq";
+import { ADDENDUM_ENTRIES, groupAddendum, paginateAddendum } from "../../data/addendum";
 import { fmt$, fmt$2, fmtNum, fmtPct, tierRange } from "../../utils/format";
 import { CoverPage } from "./CoverPage";
 import {
@@ -498,58 +499,69 @@ export function ProposalDocument({ state, costs }: Props) {
         <FooterBar {...ftr} />
       </Page>
 
-      {/* ═══ PAGE 6: SECTION 5 — Corridor Rates Addendum ═══ */}
-      <Page>
-        <HeaderBar subtitle="Addendum — Corridor Processing Rates" {...hdr} />
-        <div className="px-10 py-6">
-          <SectionTitle num="05" title="Addendum — Per-corridor processing rates" />
-          <p className="mb-6 max-w-[600px] text-[11px] leading-relaxed text-black/60">
-            Corridor-level processing rates are maintained on the Zeam pricing portal and updated
-            continuously to reflect live rail economics, regulatory changes, and FX conditions.
-            This Addendum incorporates those rates by reference.
-          </p>
-
-          {/* URL card */}
-          <div
-            className="flex items-center gap-4 rounded-xl border border-violet-200 bg-violet-50/60 px-5 py-4"
-          >
-            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-violet-100">
-              <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-              </svg>
-            </div>
-            <div>
-              <div className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-violet-500 mb-0.5">
-                Corridor rates portal
+      {/* ═══ PAGES 6+: SECTION 5 — Corridors & Banks Addendum ═══ */}
+      {(() => {
+        const rows = groupAddendum(ADDENDUM_ENTRIES);
+        const pages = paginateAddendum(rows, 33);
+        return pages.map((pageRows, pi) => (
+          <Page key={pi}>
+            <HeaderBar subtitle={`Addendum — Countries & Banks (${pi + 1}/${pages.length})`} {...hdr} />
+            <div className="px-10 py-6">
+              {pi === 0 && (
+                <>
+                  <SectionTitle num="05" title="Addendum — Countries, banks & payment providers" />
+                  <p className="mb-4 max-w-[640px] text-[10.5px] leading-relaxed text-black/60">
+                    The following countries, banks, and payment providers are supported under this Service Order.
+                    Directions: <b>OffRamp</b> = send to recipient · <b>OnRamp</b> = receive / collect.
+                    {" "}Types: <b>Bank</b> = bank transfer · <b>Momo</b> = mobile money · <b>Cash</b> = cash pickup · <b>QR / Wallet</b> = digital wallet.
+                  </p>
+                </>
+              )}
+              <div className="overflow-hidden rounded-md border border-black/[0.08]">
+                {/* Header */}
+                <div
+                  className="flex gap-3 px-2.5 py-[5px] text-white"
+                  style={{ background: "#0E0626", fontSize: 9, letterSpacing: "0.05em", textTransform: "uppercase" }}
+                >
+                  <div style={{ flex: 1.4 }}>Country</div>
+                  <div style={{ flex: 0.8 }}>Direction</div>
+                  <div style={{ flex: 0.6 }}>Type</div>
+                  <div style={{ flex: 3 }}>Providers</div>
+                </div>
+                {/* Rows */}
+                {pageRows.map((row, i) => (
+                  <div
+                    key={i}
+                    className={`flex gap-3 items-start px-2.5 py-[5px] text-[9.5px] ${
+                      i % 2 ? "bg-violet-600/[0.04]" : ""
+                    } ${i ? "border-t border-black/[0.08]" : ""}`}
+                  >
+                    <div style={{ flex: 1.4 }} className="font-medium">{row.country}</div>
+                    <div style={{ flex: 0.8 }}>
+                      <span className={`rounded-sm px-1 py-px text-[8px] font-bold ${
+                        row.direction === "OffRamp"
+                          ? "bg-violet-100 text-violet-700"
+                          : "bg-emerald-100 text-emerald-700"
+                      }`}>{row.direction}</span>
+                    </div>
+                    <div style={{ flex: 0.6 }} className="text-black/55">{row.type}</div>
+                    <div style={{ flex: 3 }} className="text-black/70 leading-snug">
+                      {row.providers.join(" · ")}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="text-[14px] font-bold text-violet-800">
-                {state.corridorUrl || "https://zeam.io/corridors"}
-              </div>
+              {pi === pages.length - 1 && (
+                <div className="mt-4 rounded-md border-l-[3px] border-l-stone-400 bg-stone-50 px-3.5 py-3 text-[9.5px] leading-relaxed text-black/60">
+                  <b className="text-stone-800">OTC pricing.</b>{" "}
+                  Transactions exceeding $500,000 USD per single transaction are priced on an Over-The-Counter (OTC) basis and quoted separately.
+                </div>
+              )}
             </div>
-          </div>
-
-          {/* Pricing notes */}
-          <div className="mt-6 flex flex-col gap-3">
-            <div className="rounded-md border-l-[3px] border-l-violet-600 bg-violet-600/[0.04] px-3.5 py-3 text-[10.5px] leading-relaxed text-black/60">
-              <b className="text-stone-900">How to read the rate card.</b>{" "}
-              Corridor rates are additive to the bundle OOB rate.
-              Retail Corridor Rate = OOB rate (from bundle) + Base Variable Rate + [Complex Uplift if applicable] + Applicable Fixed Fee.
-            </div>
-            <div className="rounded-md border-l-[3px] border-l-stone-400 bg-stone-50 px-3.5 py-3 text-[10.5px] leading-relaxed text-black/60">
-              <b className="text-stone-800">OTC pricing.</b>{" "}
-              Transactions exceeding $500,000 USD per single transaction are priced on an
-              Over-The-Counter (OTC) basis and quoted separately outside the published rate card.
-            </div>
-            <div className="rounded-md border-l-[3px] border-l-amber-500 bg-amber-500/[0.05] px-3.5 py-3 text-[10.5px] leading-relaxed text-black/60">
-              <b className="text-stone-800">Rate classification.</b>{" "}
-              <span className="text-violet-700 font-semibold">Standard</span> corridors carry no uplift.
-              {" "}<span className="text-amber-700 font-semibold">Complex</span> corridors apply a complexity uplift as specified in the Service Order.
-              {" "}<span className="text-red-700 font-semibold">Restricted</span> corridors are quote-only and not available on the standard rate card.
-            </div>
-          </div>
-        </div>
-        <FooterBar {...ftr} />
-      </Page>
+            <FooterBar {...ftr} />
+          </Page>
+        ));
+      })()}
 
       {/* ═══ PAGE 7: COMMERCIAL SUMMARY ═══ */}
       <Page>
