@@ -2,6 +2,7 @@ import type { ProposalState } from "../../types";
 import type { DerivedCosts } from "../../hooks/useDerivedCosts";
 import { ZEAM_DATA } from "../../data/cpq";
 import { fmt$, fmt$2, fmtNum, fmtPct, tierRange } from "../../utils/format";
+import { CoverPage } from "./CoverPage";
 import {
   Page,
   HeaderBar,
@@ -28,8 +29,8 @@ export function ProposalDocument({ state, costs }: Props) {
     infraTier,
     slaTierBA,
     slaTierINFRA,
+    reliance,
     monthlyTotal,
-    corridors,
   } = costs;
 
   const hdr = {
@@ -47,7 +48,10 @@ export function ProposalDocument({ state, costs }: Props) {
 
   return (
     <div className="proposal-stack flex min-h-full flex-col gap-6 p-6">
-      {/* ═══ PAGE 1: COVER ═══ */}
+      {/* ═══ PAGE 0: COVER ═══ */}
+      <CoverPage state={state} costs={costs} />
+
+      {/* ═══ PAGE 1: OVERVIEW ═══ */}
       <Page>
         {/* Purple hero */}
         <div
@@ -167,13 +171,13 @@ export function ProposalDocument({ state, costs }: Props) {
               ].map((c) => (
                 <div
                   key={c.n}
-                  className="flex min-h-[84px] flex-col rounded-md p-3 text-white"
+                  className="flex min-h-[84px] flex-col justify-between rounded-md p-3 text-white"
                   style={{ background: "#1A0936" }}
                 >
                   <div className="text-[11.5px] font-bold tracking-tight">
                     {c.n}
                   </div>
-                  <div className="mt-1.5 text-[9px] leading-snug text-white/70">
+                  <div className="text-[9px] leading-snug text-white/70">
                     {c.t}
                   </div>
                 </div>
@@ -316,7 +320,7 @@ export function ProposalDocument({ state, costs }: Props) {
             <>
               <div className="mb-4 flex gap-3">
                 <Stat label="Expected TPV / month" value={fmt$(infraTier.tpv)} />
-                <Stat label="Selected tier" value={`${fmt$(infraTier.mcf)} MCF`} highlight />
+                <Stat label="Selected tier" value={fmt$(infraTier.mcf)} highlight />
                 <Stat label="Variable rate" value={fmtPct(infraTier.rate)} />
                 <Stat label="Est. monthly variable" value={fmt$(infraTier.tpv * infraTier.rate)} />
               </div>
@@ -371,13 +375,17 @@ export function ProposalDocument({ state, costs }: Props) {
             ⚠ Out-of-bundle (OOB) transactions are charged monthly in arrears.
             OOB rates already include the corridor variable fee floor.
           </div>
+          <div className="mt-3 rounded border-l-[3px] border-l-stone-400 bg-stone-50 px-3 py-2.5 text-[10px] leading-relaxed text-black/60">
+            <b className="text-stone-800">OTC pricing.</b> Transactions exceeding $500,000 USD per single transaction
+            are priced on an Over-The-Counter (OTC) basis and quoted separately outside this rate card.
+          </div>
         </div>
         <FooterBar {...ftr} />
       </Page>
 
-      {/* ═══ PAGE 5: SECTIONS 3 & 4 — SLA + Compliance ═══ */}
+      {/* ═══ PAGE 5: SECTION 3 — SLA + Reliance ═══ */}
       <Page>
-        <HeaderBar subtitle="Service Order — Sections 3 & 4" {...hdr} />
+        <HeaderBar subtitle="Service Order — Section 3" {...hdr} />
         <div className="px-10 py-6">
           <SectionTitle num="03" title="Support / SLA" />
 
@@ -411,8 +419,60 @@ export function ProposalDocument({ state, costs }: Props) {
             ]}
           />
 
-          <div className="mt-4" />
+          {reliance && (
+            <>
+              <div className="mt-4" />
+              <SectionTitle num="03a" title="Reliance model — regulatory liability absorption (JR)" />
+              <div className="mb-3 rounded-md border-l-[3px] border-l-amber-500 bg-amber-500/[0.05] px-3.5 py-3 text-[10px] leading-relaxed text-black/60">
+                <b className="text-stone-900">Applicable to unlicensed entities.</b>{" "}
+                The client operates under Zeam’s FSCA licence and FIC registration on a month-to-month basis
+                until the client acquires its own CASP licence. This arrangement covers both the FSCA licence
+                and FIC registration obligations.
+              </div>
+              <SimpleTable
+                cols={[
+                  { k: "item", label: "Fee component", flex: 2.2 },
+                  { k: "basis", label: "Basis", flex: 1.2 },
+                  { k: "amount", label: "Amount", flex: 1, num: true },
+                ]}
+                rows={[
+                  {
+                    item: "Regulatory Liability Absorption — monthly retainer",
+                    basis: "Monthly · ADV",
+                    amount: fmt$(reliance.monthlyFee) + "/mo",
+                  },
+                  {
+                    item: "Processing fee — Regulatory Liability Absorption",
+                    basis: "0.15% × TPV actuals · ARR",
+                    amount: fmtPct(0.0015),
+                  },
+                  ...(reliance.quarterlyReviewFee > 0
+                    ? [{
+                        item: "Compliance Certification & Partner Review (self-managed)",
+                        basis: "Quarterly · ADV",
+                        amount: fmt$(reliance.quarterlyReviewFee) + "/qtr",
+                      }]
+                    : []),
+                ]}
+              />
+            </>
+          )}
+
+        </div>
+        <FooterBar {...ftr} />
+      </Page>
+
+      {/* ═══ PAGE 5b: SECTION 4 — Compliance Modules ═══ */}
+      <Page>
+        <HeaderBar subtitle="Service Order — Section 4" {...hdr} />
+        <div className="px-10 py-6">
           <SectionTitle num="04" title="Compliance modules — usage-based" />
+          <p className="mb-4 max-w-[620px] text-[10.5px] leading-relaxed text-black/60">
+            The following compliance services are billed in arrears on actual usage.
+            Fees are charged per event and invoiced monthly alongside out-of-bundle processing fees.
+            {state.complianceModel === "B" && " Under Model B (partner-managed), the client is responsible for operating these modules independently; Zeam oversight and governance fees apply separately."}
+            {state.complianceModel === "C" && " Under Model C (hybrid), module applicability is determined per corridor. See Addendum for corridor-level compliance model assignment."}
+          </p>
           <SimpleTable
             cols={[
               { k: "name", label: "Service", flex: 2 },
@@ -429,41 +489,54 @@ export function ProposalDocument({ state, costs }: Props) {
         <FooterBar {...ftr} />
       </Page>
 
-      {/* ═══ PAGE 6: SECTION 5 — Corridors Addendum ═══ */}
+      {/* ═══ PAGE 6: SECTION 5 — Corridor Rates Addendum ═══ */}
       <Page>
-        <HeaderBar subtitle="Addendum — Per-Corridor Processing Rates" {...hdr} />
+        <HeaderBar subtitle="Addendum — Corridor Processing Rates" {...hdr} />
         <div className="px-10 py-6">
-          <SectionTitle
-            num="05"
-            title={`Addendum — ${state.region === "ALL" ? "all regions" : state.region} corridors`}
-          />
-          <p className="mb-4 max-w-[640px] text-[10.5px] leading-relaxed text-black/60">
-            This Addendum forms part of the Service Order. Rates are additive to
-            the bundle OOB rate.{" "}
-            <b>
-              Retail Corridor Rate = OOB rate (from bundle) + Base Variable Rate
-              + [Complex Uplift if applicable] + Applicable Fixed Fee.
-            </b>
+          <SectionTitle num="05" title="Addendum — Per-corridor processing rates" />
+          <p className="mb-6 max-w-[600px] text-[11px] leading-relaxed text-black/60">
+            Corridor-level processing rates are maintained on the Zeam pricing portal and updated
+            continuously to reflect live rail economics, regulatory changes, and FX conditions.
+            This Addendum incorporates those rates by reference.
           </p>
-          <SimpleTable
-            small
-            cols={[
-              { k: "country", label: "Country", flex: 1.2 },
-              { k: "method", label: "Method", flex: 1.7 },
-              { k: "currency", label: "Cur.", flex: 0.5 },
-              { k: "cls", label: "Class", flex: 0.7 },
-              { k: "variable", label: "Variable", flex: 0.7, num: true },
-              { k: "fixed", label: "Fixed", flex: 0.6, num: true },
-              { k: "spread", label: "FX Spread", flex: 0.7, num: true },
-              { k: "retail", label: "Indicative Retail", flex: 1, num: true },
-            ]}
-            rows={corridors as unknown as Record<string, unknown>[]}
-          />
-          <div className="mt-3.5 rounded-md bg-violet-600/[0.05] px-3.5 py-3 text-[9.5px] leading-relaxed text-black/60">
-            <b>Key.</b>{" "}
-            <span className="text-violet-600">Standard</span> — no uplift.{" "}
-            <span className="text-amber-600">Complex</span> — apply complex uplift from SO.{" "}
-            <span className="text-red-600">Restricted</span> — quote-only, not on standard rate card.
+
+          {/* URL card */}
+          <div
+            className="flex items-center gap-4 rounded-xl border border-violet-200 bg-violet-50/60 px-5 py-4"
+          >
+            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-violet-100">
+              <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-[9.5px] font-semibold uppercase tracking-[0.12em] text-violet-500 mb-0.5">
+                Corridor rates portal
+              </div>
+              <div className="text-[14px] font-bold text-violet-800">
+                {state.corridorUrl || "https://zeam.io/corridors"}
+              </div>
+            </div>
+          </div>
+
+          {/* Pricing notes */}
+          <div className="mt-6 flex flex-col gap-3">
+            <div className="rounded-md border-l-[3px] border-l-violet-600 bg-violet-600/[0.04] px-3.5 py-3 text-[10.5px] leading-relaxed text-black/60">
+              <b className="text-stone-900">How to read the rate card.</b>{" "}
+              Corridor rates are additive to the bundle OOB rate.
+              Retail Corridor Rate = OOB rate (from bundle) + Base Variable Rate + [Complex Uplift if applicable] + Applicable Fixed Fee.
+            </div>
+            <div className="rounded-md border-l-[3px] border-l-stone-400 bg-stone-50 px-3.5 py-3 text-[10.5px] leading-relaxed text-black/60">
+              <b className="text-stone-800">OTC pricing.</b>{" "}
+              Transactions exceeding $500,000 USD per single transaction are priced on an
+              Over-The-Counter (OTC) basis and quoted separately outside the published rate card.
+            </div>
+            <div className="rounded-md border-l-[3px] border-l-amber-500 bg-amber-500/[0.05] px-3.5 py-3 text-[10.5px] leading-relaxed text-black/60">
+              <b className="text-stone-800">Rate classification.</b>{" "}
+              <span className="text-violet-700 font-semibold">Standard</span> corridors carry no uplift.
+              {" "}<span className="text-amber-700 font-semibold">Complex</span> corridors apply a complexity uplift as specified in the Service Order.
+              {" "}<span className="text-red-700 font-semibold">Restricted</span> corridors are quote-only and not available on the standard rate card.
+            </div>
           </div>
         </div>
         <FooterBar {...ftr} />
@@ -503,7 +576,7 @@ export function ProposalDocument({ state, costs }: Props) {
                 ? [{ item: "Section 1 — Once-off, onboarding & configuration", cadence: "On signature", amount: fmt$(onceOffTotal) }]
                 : []),
               ...(infraTier
-                ? [{ item: `Section 2 — Infrastructure platform fee (Tier ${fmt$(infraTier.mcf)} / ${fmtPct(infraTier.rate)})`, cadence: "Monthly · ADV", amount: `${fmt$(infraTier.mcf)} MCF` }]
+                ? [{ item: `Section 2 — Infrastructure platform fee (Tier ${fmt$(infraTier.mcf)} / ${fmtPct(infraTier.rate)})`, cadence: "Monthly · ADV", amount: fmt$(infraTier.mcf) }]
                 : []),
               ...(baBundleMonthly > 0
                 ? [{ item: "Section 2 — Business Account bundles", cadence: "Monthly · ADV", amount: fmt$(baBundleMonthly) }]
@@ -513,6 +586,15 @@ export function ProposalDocument({ state, costs }: Props) {
                 : []),
               ...(slaTierINFRA
                 ? [{ item: `Section 3 — SLA (Infra · ${slaTierINFRA.name})`, cadence: "Monthly · ADV", amount: fmt$(slaTierINFRA.retainer) }]
+                : []),
+              ...(reliance
+                ? [
+                    { item: "Reliance — Regulatory Liability Absorption retainer", cadence: "Monthly · ADV", amount: fmt$(reliance.monthlyFee) },
+                    { item: `Reliance — Processing fee (0.15% × ${fmt$(infraTier?.tpv || 0)} TPV est.)`, cadence: "Monthly · ARR", amount: fmt$(reliance.processingFee) },
+                    ...(reliance.quarterlyReviewFee > 0
+                      ? [{ item: "Reliance — Compliance Cert & Partner Review", cadence: "Quarterly · ADV", amount: fmt$(reliance.quarterlyReviewFee) + "/qtr" }]
+                      : []),
+                  ]
                 : []),
               { item: "Section 4 — Compliance modules", cadence: "Monthly · ARR", amount: "Usage-based" },
               { item: "Section 5 — Corridor processing fees", cadence: "Per-txn · ARR", amount: "See Addendum" },

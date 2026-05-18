@@ -1,6 +1,6 @@
 import type { ProposalState, BundleCategory } from "../../types";
 import type { DerivedCosts } from "../../hooks/useDerivedCosts";
-import { ZEAM_DATA, REGIONS } from "../../data/cpq";
+import { ZEAM_DATA } from "../../data/cpq";
 import { Section } from "./Section";
 import { CostSummary } from "./CostSummary";
 import {
@@ -273,23 +273,69 @@ export function BuilderForm({
         )}
       </Section>
 
-      <Section num="07" title="Corridor scope" defaultOpen={false}>
-        <Field label="Region">
-          <Segmented
-            value={state.region}
-            onChange={(v) => set("region", v)}
-            options={REGIONS.map((r) => ({
-              value: r,
-              label: r === "ALL" ? "All" : r,
-            }))}
+      <Section num="07" title="Reliance model (JR)" defaultOpen={false}>
+        <div className="rounded-xl border border-amber-200 bg-amber-50/60 px-3.5 py-3 text-[10.5px] leading-relaxed text-amber-800">
+          <b>Applicable to unlicensed entities</b> — enables the client to operate under Zeam's FSCA licence
+          and FIC registration on a month-to-month basis until the client acquires its own CASP.
+        </div>
+        <Field label="Include reliance model">
+          <Toggle
+            on={state.includeReliance}
+            onChange={(v) => set("includeReliance", v)}
           />
         </Field>
-        <div className="flex items-center gap-1.5 text-[11px] text-stone-400">
-          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5a17.92 17.92 0 01-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
-          </svg>
-          <span>{costs.corridors.length} corridors in the Addendum</span>
+        {state.includeReliance && (
+          <>
+            <Field label="Compliance approach">
+              <Segmented
+                value={state.relianceSelfManaged ? "self" : "zeam"}
+                onChange={(v) => set("relianceSelfManaged", v === "self")}
+                options={[
+                  { value: "zeam", label: "Zeam compliance module" },
+                  { value: "self", label: "Self-managed (+$1,500/qtr cert)" },
+                ]}
+              />
+            </Field>
+            <div className="rounded-xl border border-stone-200 bg-white p-3 text-[11px]">
+              <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2">
+                <span className="text-stone-500">Regulatory Liability Absorption fee</span>
+                <span className="font-semibold tabular-nums">$3,000/mo</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2">
+                <span className="text-stone-500">Processing fee (0.15% × TPV est.)</span>
+                <span className="font-semibold tabular-nums">
+                  ${((Number(state.expectedTPV) || 0) * 0.0015).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
+                </span>
+              </div>
+              {state.relianceSelfManaged && (
+                <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2">
+                  <span className="text-stone-500">Compliance Cert &amp; Partner Review</span>
+                  <span className="font-semibold tabular-nums">$1,500/qtr</span>
+                </div>
+              )}
+              <div className="flex items-center justify-between pt-1 text-[12px] font-bold">
+                <span>Est. monthly cost</span>
+                <span className="text-violet-700 tabular-nums">
+                  ${(3000 + (Number(state.expectedTPV) || 0) * 0.0015 + (state.relianceSelfManaged ? 500 : 0)).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
+                </span>
+              </div>
+            </div>
+          </>
+        )}
+      </Section>
+
+      <Section num="08" title="Corridor rates" defaultOpen={false}>
+        <div className="rounded-xl border border-sky-200 bg-sky-50/60 px-3.5 py-3 text-[10.5px] leading-relaxed text-sky-800">
+          Corridor rates are published on the Zeam website and are not printed in the proposal.
+          The proposal will reference the URL below.
         </div>
+        <Field label="Corridor rates URL">
+          <Text
+            value={state.corridorUrl}
+            onChange={(v) => set("corridorUrl", v)}
+            placeholder="https://zeam.io/corridors"
+          />
+        </Field>
       </Section>
     </div>
   );

@@ -121,4 +121,11 @@ export interface ProposalState {
 
   // Corridors
   region: string;
+
+  // Reliance model (JR — unlicensed entities)
+  includeReliance: boolean;
+  relianceSelfManaged: boolean; // true = client manages own compliance (triggers quarterly cert)
+
+  // Corridor rates website
+  corridorUrl: string;
 }

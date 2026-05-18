@@ -120,13 +120,14 @@ export function SimpleTable({
   small?: boolean;
 }) {
   const fs = small ? "text-[9.5px]" : "text-[10.5px]";
-  const pad = small ? "px-2.5 py-[7px]" : "px-3 py-[9px]";
+  // Tighter row padding for small tables (e.g. 33-row corridor addendum) to prevent page overflow
+  const pad = small ? "px-2.5 py-[5px]" : "px-3 py-[9px]";
 
   return (
     <div className="overflow-hidden rounded-md border border-black/[0.08]">
       {/* Header */}
       <div
-        className={`flex ${pad} text-white`}
+        className={`flex gap-3 ${pad} text-white`}
         style={{
           background: "#0E0626",
           fontSize: small ? 9 : 9.5,
@@ -150,7 +151,7 @@ export function SimpleTable({
         return (
           <div key={i}>
             <div
-              className={`flex items-center ${pad} ${fs} ${
+              className={`flex items-center gap-3 ${pad} ${fs} ${
                 selected
                   ? "border-l-[3px] border-l-violet-600 bg-violet-600/[0.08] font-semibold"
                   : i % 2
@@ -194,7 +195,7 @@ export function SimpleTable({
       {/* Footer */}
       {footer && (
         <div
-          className={`flex ${pad} ${fs} border-t-2 border-black/[0.08] bg-violet-600/[0.05] font-semibold`}
+          className={`flex gap-3 ${pad} ${fs} border-t-2 border-black/[0.08] bg-violet-600/[0.05] font-semibold`}
         >
           {cols.map((c, i) => (
             <div
