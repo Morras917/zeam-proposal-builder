@@ -63,6 +63,7 @@ export function defaultState(): ProposalState {
 
     includeReliance: false,
     relianceSelfManaged: false,
+    relianceDiscount: 0,
 
     corridorUrl: "https://zeam.io/corridors",
   };

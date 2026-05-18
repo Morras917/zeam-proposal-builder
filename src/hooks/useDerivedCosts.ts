@@ -7,11 +7,13 @@ export interface BundleLine extends Bundle {
 }
 
 export interface RelianceCosts {
-  monthlyFee: number;        // $3,000 flat
-  processingFee: number;     // 0.15% × TPV estimate
-  quarterlyReviewFee: number; // $1,500/qtr if self-managed, else 0
-  totalMonthly: number;      // monthlyFee + processingFee + quarterlyReviewFee/3
-  totalAnnual: number;       // totalMonthly * 12 + (selfManaged ? 0 : already included)
+  monthlyFee: number;          // $3,000 flat (pre-discount)
+  discountPct: number;         // % discount applied to retainer
+  discountedMonthlyFee: number; // monthlyFee after discount
+  processingFee: number;       // 0.15% × TPV estimate
+  quarterlyReviewFee: number;  // $1,500/qtr if self-managed, else 0
+  totalMonthly: number;        // discountedMonthlyFee + processingFee + quarterlyReviewFee/3
+  totalAnnual: number;         // totalMonthly * 12
 }
 
 export interface DerivedCosts {
@@ -85,18 +87,21 @@ export function useDerivedCosts(state: ProposalState): DerivedCosts {
     const PROCESSING_RATE = 0.0015; // 0.15%
     const QUARTERLY_CERT = 1500;
     const tpv = Number(state.expectedTPV) || 0;
+    const discountPct = Math.min(100, Math.max(0, Number(state.relianceDiscount) || 0));
+    const discountedMonthlyFee = MONTHLY_FEE * (1 - discountPct / 100);
     const processingFee = tpv * PROCESSING_RATE;
     const quarterlyReviewFee = state.relianceSelfManaged ? QUARTERLY_CERT : 0;
-    // Monthly equivalent of quarterly cert = fee/3, for running total purposes
-    const totalMonthly = MONTHLY_FEE + processingFee + quarterlyReviewFee / 3;
+    const totalMonthly = discountedMonthlyFee + processingFee + quarterlyReviewFee / 3;
     return {
       monthlyFee: MONTHLY_FEE,
+      discountPct,
+      discountedMonthlyFee,
       processingFee,
       quarterlyReviewFee,
       totalMonthly,
       totalAnnual: totalMonthly * 12,
     };
-  }, [state.includeReliance, state.relianceSelfManaged, state.expectedTPV]);
+  }, [state.includeReliance, state.relianceSelfManaged, state.expectedTPV, state.relianceDiscount]);
 
   const monthlyTotal =
     baBundleMonthly +

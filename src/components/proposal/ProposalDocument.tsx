@@ -444,9 +444,11 @@ export function ProposalDocument({ state, costs }: Props) {
                 ]}
                 rows={[
                   {
-                    item: "Regulatory Liability Absorption — monthly retainer",
+                    item: `Regulatory Liability Absorption — monthly retainer${reliance.discountPct > 0 ? ` (${reliance.discountPct}% discount applied)` : ""}`,
                     basis: "Monthly · ADV",
-                    amount: fmt$(reliance.monthlyFee) + "/mo",
+                    amount: reliance.discountPct > 0
+                      ? fmt$(reliance.discountedMonthlyFee) + "/mo"
+                      : fmt$(reliance.monthlyFee) + "/mo",
                   },
                   {
                     item: "Processing fee — Regulatory Liability Absorption",
@@ -596,7 +598,7 @@ export function ProposalDocument({ state, costs }: Props) {
                 : []),
               ...(reliance
                 ? [
-                    { item: "Reliance — Regulatory Liability Absorption retainer", cadence: "Monthly · ADV", amount: fmt$(reliance.monthlyFee) },
+                    { item: "Reliance — Regulatory Liability Absorption retainer", cadence: "Monthly · ADV", amount: fmt$(reliance.discountedMonthlyFee) },
                     { item: `Reliance — Processing fee (0.15% × ${fmt$(infraTier?.tpv || 0)} TPV est.)`, cadence: "Monthly · ARR", amount: fmt$(reliance.processingFee) },
                     ...(reliance.quarterlyReviewFee > 0
                       ? [{ item: "Reliance — Compliance Cert & Partner Review", cadence: "Quarterly · ADV", amount: fmt$(reliance.quarterlyReviewFee) + "/qtr" }]

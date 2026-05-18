@@ -302,10 +302,29 @@ export function BuilderForm({
                 ]}
               />
             </Field>
+            <Field label="Discount on retainer (%)">
+              <Num
+                value={state.relianceDiscount || 0}
+                onChange={(v) => set("relianceDiscount", Math.min(100, Math.max(0, v)))}
+                step={5}
+              />
+            </Field>
             <div className="rounded-xl border border-stone-200 bg-white p-3 text-[11px]">
               <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2">
                 <span className="text-stone-500">Regulatory Liability Absorption fee</span>
-                <span className="font-semibold tabular-nums">$3,000/mo</span>
+                <div className="text-right">
+                  {(state.relianceDiscount || 0) > 0 && (
+                    <span className="mr-1.5 text-[10px] text-stone-400 line-through tabular-nums">$3,000</span>
+                  )}
+                  <span className="font-semibold tabular-nums">
+                    ${(3000 * (1 - (state.relianceDiscount || 0) / 100)).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
+                  </span>
+                  {(state.relianceDiscount || 0) > 0 && (
+                    <span className="ml-1.5 rounded-md bg-green-50 px-1 py-0.5 text-[9px] font-bold text-green-600">
+                      -{state.relianceDiscount}%
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2">
                 <span className="text-stone-500">Processing fee (0.15% × TPV est.)</span>
@@ -322,7 +341,7 @@ export function BuilderForm({
               <div className="flex items-center justify-between pt-1 text-[12px] font-bold">
                 <span>Est. monthly cost</span>
                 <span className="text-violet-700 tabular-nums">
-                  ${(3000 + (Number(state.expectedTPV) || 0) * 0.0015 + (state.relianceSelfManaged ? 500 : 0)).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
+                  ${(3000 * (1 - (state.relianceDiscount || 0) / 100) + (Number(state.expectedTPV) || 0) * 0.0015 + (state.relianceSelfManaged ? 500 : 0)).toLocaleString("en-US", { maximumFractionDigits: 0 })}/mo
                 </span>
               </div>
             </div>

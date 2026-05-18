@@ -126,6 +126,7 @@ export interface ProposalState {
   // Reliance model (JR — unlicensed entities)
   includeReliance: boolean;
   relianceSelfManaged: boolean; // true = client manages own compliance (triggers quarterly cert)
+  relianceDiscount: number;    // % discount on the $3,000 monthly retainer
 
   // Corridor rates website
   corridorUrl: string;
