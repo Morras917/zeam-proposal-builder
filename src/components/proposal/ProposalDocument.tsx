@@ -201,17 +201,16 @@ export function ProposalDocument({ state, costs }: Props) {
                 <li><b>Volume, not count:</b> calculated on total transaction volume, not operation count.</li>
                 <li><b>Counted once:</b> both pay-ins and pay-outs counted on the leg flowing through Zeam.</li>
                 <li><b>Excluded:</b> internal book transfers between a client's own Zeam sub-accounts.</li>
-                <li><b>Excluded:</b> failed, reversed, or rejected transactions are not counted.</li>
               </ul>
             </div>
             <div className="rounded-lg p-[18px] text-white" style={{ background: "#1A0936" }}>
               <div className="text-[13px] font-bold">What's covered in the other schedules</div>
               <ul className="m-0 mt-3 list-disc space-y-1.5 pl-4 text-[10.5px] leading-relaxed text-white/80">
-                <li>Schedule 1 — KYC, integration, sandbox, go-live (one-off)</li>
-                <li>Schedule 2 — Pay-in and pay-out fees by rail and corridor</li>
-                <li>Schedule 3 — Connect — on/off-ramp partner fees</li>
-                <li>Schedule 4 — Tiered SLA — Standard, Priority, Mission-Critical</li>
-                <li>Schedule 5 — Optional add-ons — custom reporting, white-label, etc.</li>
+                <li>Schedule 1 — Once-off, onboarding & configuration</li>
+                <li>Schedule 2 — Platform fee — tiered to monthly TPV</li>
+                <li>Schedule 3 — Connect fees — on/off-ramp</li>
+                <li>Schedule 4 — Tiered SLA & support</li>
+                <li>Schedule 5 — Optional add-ons & corridors</li>
               </ul>
             </div>
           </div>
