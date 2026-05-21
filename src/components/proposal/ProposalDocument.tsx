@@ -1,7 +1,6 @@
 import type { ProposalState } from "../../types";
 import type { DerivedCosts } from "../../hooks/useDerivedCosts";
 import { ZEAM_DATA } from "../../data/cpq";
-import { ADDENDUM_ENTRIES, groupAddendum, paginateAddendum } from "../../data/addendum";
 import { fmt$, fmt$2, fmtNum, fmtPct, tierRange } from "../../utils/format";
 import { CoverPage } from "./CoverPage";
 import {
@@ -102,11 +101,11 @@ export function ProposalDocument({ state, costs }: Props) {
             </h1>
             <p className="mt-4 max-w-[540px] text-xs leading-relaxed text-white/80">
               {state.coverNote ||
-                "Five clean schedules. One platform fee tiered against monthly TPV. Pay-in and pay-out fees priced by rail and corridor, SLAs and add-ons priced à la carte, so you only fund what you use."}
+                "Four clean schedules. One platform fee tiered against monthly TPV. Pay-in and pay-out fees priced by rail and corridor, SLAs and add-ons priced à la carte, so you only fund what you use."}
             </p>
             <div className="mt-5 flex flex-wrap gap-2">
               {[
-                "5 Schedules",
+                "4 Schedules",
                 state.includeINFRA ? "Tiered TPV" : "Bundle Tiers",
                 "Pay-In / Pay-Out",
                 "SLA Tiers",
@@ -155,9 +154,9 @@ export function ProposalDocument({ state, costs }: Props) {
           {/* 5 schedules */}
           <div className="keep-together mt-4">
             <h2 className="mb-3.5 text-[15px] font-bold tracking-tight">
-              Pricing in five schedules
+              Pricing in four schedules
             </h2>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {[
                 { n: "Schedule 1", t: "Once-off, onboarding & configuration" },
                 {
@@ -166,9 +165,8 @@ export function ProposalDocument({ state, costs }: Props) {
                     ? "Platform fee — tiered to monthly TPV"
                     : "Platform & bundle fees",
                 },
-                { n: "Schedule 3", t: "Connect fees — on/off-ramp" },
-                { n: "Schedule 4", t: "Tiered SLA & support" },
-                { n: "Schedule 5", t: "Optional add-ons & corridors" },
+                { n: "Schedule 3", t: "Tiered SLA & support" },
+                { n: "Schedule 4", t: "Compliance modules" },
               ].map((c) => (
                 <div
                   key={c.n}
@@ -208,9 +206,8 @@ export function ProposalDocument({ state, costs }: Props) {
               <ul className="m-0 mt-3 list-disc space-y-1.5 pl-4 text-[10.5px] leading-relaxed text-white/80">
                 <li>Schedule 1 — Once-off, onboarding & configuration</li>
                 <li>Schedule 2 — Platform fee — tiered to monthly TPV</li>
-                <li>Schedule 3 — Connect fees — on/off-ramp</li>
-                <li>Schedule 4 — Tiered SLA & support</li>
-                <li>Schedule 5 — Optional add-ons & corridors</li>
+                <li>Schedule 3 — Tiered SLA & support</li>
+                <li>Schedule 4 — Compliance modules</li>
               </ul>
             </div>
           </div>
@@ -224,7 +221,7 @@ export function ProposalDocument({ state, costs }: Props) {
                   : "Model C (Hybrid)"}
               .
             </b>{" "}
-            {state.complianceModel === "A" && "Full compliance fees apply on the Zeam stack. Module fees billed in arrears as listed in Schedule 5."}
+            {state.complianceModel === "A" && "Full compliance fees apply on the Zeam stack. Module fees billed in arrears as listed in Schedule 4."}
             {state.complianceModel === "B" && "Partner-managed compliance — variable fee reduced by 0.30–0.50%. Governance / oversight fee of $500–$2,000/mo retained."}
             {state.complianceModel === "C" && "Hybrid model — applied per corridor. See Addendum for corridor-level Model assignment."}
           </div>
@@ -498,71 +495,7 @@ export function ProposalDocument({ state, costs }: Props) {
         <FooterBar {...ftr} />
       </Page>
 
-      {/* ═══ PAGES 6+: SECTION 5 — Corridors & Banks Addendum ═══ */}
-      {(() => {
-        const rows = groupAddendum(ADDENDUM_ENTRIES);
-        const pages = paginateAddendum(rows, 33);
-        return pages.map((pageRows, pi) => (
-          <Page key={pi}>
-            <HeaderBar subtitle={`Addendum — Countries & Banks (${pi + 1}/${pages.length})`} {...hdr} />
-            <div className="px-10 py-6">
-              {pi === 0 && (
-                <>
-                  <SectionTitle num="05" title="Addendum — Countries, banks & payment providers" />
-                  <p className="mb-4 max-w-[640px] text-[10.5px] leading-relaxed text-black/60">
-                    The following countries, banks, and payment providers are supported under this Service Order.
-                    Directions: <b>OffRamp</b> = send to recipient · <b>OnRamp</b> = receive / collect.
-                    {" "}Types: <b>Bank</b> = bank transfer · <b>Momo</b> = mobile money · <b>Cash</b> = cash pickup · <b>QR / Wallet</b> = digital wallet.
-                  </p>
-                </>
-              )}
-              <div className="overflow-hidden rounded-md border border-black/[0.08]">
-                {/* Header */}
-                <div
-                  className="flex gap-3 px-2.5 py-[5px] text-white"
-                  style={{ background: "#0E0626", fontSize: 9, letterSpacing: "0.05em", textTransform: "uppercase" }}
-                >
-                  <div style={{ flex: 1.4 }}>Country</div>
-                  <div style={{ flex: 0.8 }}>Direction</div>
-                  <div style={{ flex: 0.6 }}>Type</div>
-                  <div style={{ flex: 3 }}>Providers</div>
-                </div>
-                {/* Rows */}
-                {pageRows.map((row, i) => (
-                  <div
-                    key={i}
-                    className={`flex gap-3 items-start px-2.5 py-[5px] text-[9.5px] ${
-                      i % 2 ? "bg-violet-600/[0.04]" : ""
-                    } ${i ? "border-t border-black/[0.08]" : ""}`}
-                  >
-                    <div style={{ flex: 1.4 }} className="font-medium">{row.country}</div>
-                    <div style={{ flex: 0.8 }}>
-                      <span className={`rounded-sm px-1 py-px text-[8px] font-bold ${
-                        row.direction === "OffRamp"
-                          ? "bg-violet-100 text-violet-700"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}>{row.direction}</span>
-                    </div>
-                    <div style={{ flex: 0.6 }} className="text-black/55">{row.type}</div>
-                    <div style={{ flex: 3 }} className="text-black/70 leading-snug">
-                      {row.providers.join(" · ")}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              {pi === pages.length - 1 && (
-                <div className="mt-4 rounded-md border-l-[3px] border-l-stone-400 bg-stone-50 px-3.5 py-3 text-[9.5px] leading-relaxed text-black/60">
-                  <b className="text-stone-800">OTC pricing.</b>{" "}
-                  Transactions exceeding $500,000 USD per single transaction are priced on an Over-The-Counter (OTC) basis and quoted separately.
-                </div>
-              )}
-            </div>
-            <FooterBar {...ftr} />
-          </Page>
-        ));
-      })()}
-
-      {/* ═══ PAGE 7: COMMERCIAL SUMMARY ═══ */}
+      {/* ═══ COMMERCIAL SUMMARY ═══ */}
       <Page>
         <HeaderBar subtitle="Commercial Summary" {...hdr} />
         <div className="px-10 py-6">
@@ -617,7 +550,6 @@ export function ProposalDocument({ state, costs }: Props) {
                   ]
                 : []),
               { item: "Section 4 — Compliance modules", cadence: "Monthly · ARR", amount: "Usage-based" },
-              { item: "Section 5 — Corridor processing fees", cadence: "Per-txn · ARR", amount: "See Addendum" },
             ]}
           />
 
